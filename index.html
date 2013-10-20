@@ -71,8 +71,10 @@ var tmp,extent
 updateScale = function(myScale,myValues) {
     myRange = d3.extent(myScale.range())
     tmp = myValues
-    extent = d3.extent(tmp)
-    if (isNaN(parseInt(extent[0]))) {
+
+    extent = d3.extent(tmp.map(parseFloat))
+    console.log(extent)
+    if (isNaN(parseFloat(extent[0]))) {
 	console.log("not parsed")
 	sorted = tmp.sort()
 	myScale = d3.scale.ordinal().domain(sorted).rangePoints(myRange)
