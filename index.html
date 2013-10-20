@@ -2,37 +2,7 @@
 <meta charset="utf-8">
 <style>
 
-rect {
-opacity:.3;
-fill:grey;
-}
-
-rect.highlit {
-fill:blue;
-}
-
-text {
-font-family:"sans-serif";
-font-size:12pt
-}
-
-text.unchosen {
-font-family:"sans-serif";
-font-size:13pt;
-}
-
-text.ungotten {
-font-family:"sans-serif";
-font-size:13pt;
-display:none
-}
-
-
-text.gotten {
-font-family:"sans-serif";
-font-size:13pt;
-display:block
-}
+img {opacity:.66}
 
 </style>
 <script>
@@ -68,59 +38,62 @@ Y axis: <select id="y" class="axisSelector"></select>
 var data;
 height = window.innerHeight
 width = window.innerWidth
-x = d3.scale.linear().domain([0,255]).range([0,window.innerWidth])
-y = d3.scale.linear().domain([0,255]).range([200,window.innerHeight])
+x = d3.scale.linear().domain([0,1]).range([0,window.innerWidth])
+y = d3.scale.linear().domain([0,1]).range([200,window.innerHeight])
 
 
-
-options = ['hue','sat','lum','time','decade','yearInDecade']
-
-//let the dropdowns choose hs or v
-
-optionMenus = d3.selectAll(".axisSelector").selectAll("option").data(options)
-optionMenus.enter().append("option").attr("value",function(d) {return(d)}).text(function(d) {return (d)})
+updateOptions = function(keys) {
+    //options are dynamically updated according to the keys you put in.
+    var options = keys || ['hue','sat','lum','time','decade','yearInDecade']
+    var options = keys
+    console.log(options)
+    optionMenus = d3.selectAll(".axisSelector").selectAll("option").data(options)
+    optionMenus.enter().append("option").attr("value",function(d) {return(d)}).text(function(d) {return (d)})
+}
 
 checkVariable = function(element) {
+    //Code stolen from somewhere.
     dropdown = d3.select(element)
     var value = dropdown.node().options[dropdown.node().selectedIndex].value;
     return(value)
     dropdown.on("change",update)
 }
 
-d3.json("coverjsoncompliant.json",function(images) {
-    images = images
+d3.json("summaries.json",function(images) {
     data = images
-    retime = d3.scale.linear().range([0,255]).domain([1890,2013])
-    data.map(function(d) {
-d.time=retime(parseInt(d.year));
-d.decade=retime(10*Math.floor(parseInt(d.year)/10));
-d.yearInDecade=25.5 * (d.year % 10);
-})
+
+    data = data.filter(function(d) {return d3.keys(d).length>0}) //Some blank objects are creeping in: this isn't the best place to fix it. 
+    console.log(data.length)
+    updateOptions(d3.keys(data[0]))
     update()
-
-
 })
 
 update = function() {
     selection = d3
 	.select("#displaySpace")
-	.selectAll("img").data(data,function(d) {return d.date})
+	.selectAll("img").data(data,function(d) {return d.filename})
+
+    yVariable = checkVariable("#y")
+    xVariable = checkVariable("#x")
+
+    y.domain(d3.extent(data.map(function(d) {return d[yVariable]})))
+    x.domain(d3.extent(data.map(function(d) {return d[xVariable]})))
 
     selection
 	.enter()
 	.append("img")
-	.attr("id",function(d) {return(d.date)})
-	.attr("src",function(d) {return "130thumbs/" + d.date + ".jpg"})
+	.attr("id",function(d) {return(d.filename)})
+	.attr("src",function(d) {return d.filename})
 	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
 	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
 	.style("position","absolute")
         .attr("transform","scale(.15)")
         .style("opacity",.66)
         .append("a").attr("href",function(d) {return "130thumbs/" + d.date + ".jpg"})
-.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
-.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
+	.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
+	.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
 
-.attr("title",function(d) {return("editor: " + d.editor + " artist: " + d.artist)})
+.attr("title",function(d) {return("filename: " + d.filename)})
     selection
 	.transition()
 	.duration(3000)
