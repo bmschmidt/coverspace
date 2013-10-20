@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+rect {
+opacity:.3;
+fill:grey;
+}
+
+rect.highlit {
+fill:blue;
+}
+
+text {
+font-family:"sans-serif";
+font-size:12pt
+}
+
+text.unchosen {
+font-family:"sans-serif";
+font-size:13pt;
+}
+
+text.ungotten {
+font-family:"sans-serif";
+font-size:13pt;
+display:none
+}
+
+
+text.gotten {
+font-family:"sans-serif";
+font-size:13pt;
+display:block
+}
+
+</style>
+<script>
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-4871207-9', 'benschmidt.org');
+  ga('send', 'pageview');
+
+</script>
+
+
+<body>
+<h1>Coverspace</h1>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+
+<body>
+
+X axis: <select id="x" class="axisSelector">
+</select>
+<br>
+Y axis: <select id="y" class="axisSelector"></select>
+
+<div id=displaySpace></div>
+
+<script>
+
+var data;
+height = window.innerHeight
+width = window.innerWidth
+x = d3.scale.linear().domain([0,255]).range([0,window.innerWidth])
+y = d3.scale.linear().domain([0,255]).range([200,window.innerHeight])
+
+
+
+options = ['hue','sat','lum','time','decade','yearInDecade']
+
+//let the dropdowns choose hs or v
+
+optionMenus = d3.selectAll(".axisSelector").selectAll("option").data(options)
+optionMenus.enter().append("option").attr("value",function(d) {return(d)}).text(function(d) {return (d)})
+
+checkVariable = function(element) {
+    dropdown = d3.select(element)
+    var value = dropdown.node().options[dropdown.node().selectedIndex].value;
+    return(value)
+    dropdown.on("change",update)
+}
+
+d3.json("coverjsoncompliant.json",function(images) {
+    images = images
+    data = images
+    retime = d3.scale.linear().range([0,255]).domain([1890,2013])
+    data.map(function(d) {
+d.time=retime(parseInt(d.year));
+d.decade=retime(10*Math.floor(parseInt(d.year)/10));
+d.yearInDecade=25.5 * (d.year % 10);
+})
+    update()
+
+
+})
+
+update = function() {
+    selection = d3
+	.select("#displaySpace")
+	.selectAll("img").data(data,function(d) {return d.date})
+
+    selection
+	.enter()
+	.append("img")
+	.attr("id",function(d) {return(d.date)})
+	.attr("src",function(d) {return "130thumbs/" + d.date + ".jpg"})
+	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
+	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
+	.style("position","absolute")
+        .attr("transform","scale(.15)")
+        .style("opacity",.66)
+        .append("a").attr("href",function(d) {return "130thumbs/" + d.date + ".jpg"})
+.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
+.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
+
+.attr("title",function(d) {return("editor: " + d.editor + " artist: " + d.artist)})
+    selection
+	.transition()
+	.duration(3000)
+	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
+	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
+	.style("position","absolute")
+
+}
+d3.selectAll(".axisSelector").on("change",update)
+</script>
+</body>
