@@ -7,15 +7,21 @@ Coverspace came out of the THATCamp New England Session.
 Creating an instance
 ====================
 
+0. Clone this repository (into your webserver directory, if you have one)
 1. Create an image directory called "images" and fill it with jpgs. (Other imagetypes are trivial to support)
 2. Run "make". (Or just execute the one python line in the makefile)
-3. Open up index.html on a webserver. (Easy way: `python -m SimpleHTTPServer 8008 &`)
-4. Open the page in a web browser, and click around. (For the example: go to http://localhost:8008
+3. Open up index.html in your browser. (You have to do with a running webserver, unfortunately--the flat file won't load
+4. Open the page in a web browser, and click around. (For the example: go to http://localhost:8018)
 
-
+Creating an instance without a webserver on a Mac:
+When in the directory in terminal, just type:
+``` {sh}
+python -m SimpleHTTPServer 8018 &
+open http://localhost:8018
+```
 Dependencies:
-Python wand library
-ImageMagick
+* python w/ wand library
+* ImageMagick
 
 Notes
 ======
