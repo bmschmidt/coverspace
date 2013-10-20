@@ -66,7 +66,8 @@ d3.json("summaries.json",function(images) {
     update()
 })
 
-var tmp,extent
+var tmp,extent;
+
 updateScale = function(myScale,myValues) {
     myRange = d3.extent(myScale.range())
     tmp = myValues
@@ -98,12 +99,13 @@ update = function() {
 	.enter()
         .append("a")
 	.attr("href",function(d) {return d.filename})
+        .attr("target","_blank")
 	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
 	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
 	.attr("class","image container")
 	.append("img")
 	.attr("id",function(d) {return(d.filename)})
-	.attr("src",function(d) {return d.filename})
+	.attr("src",function(d) {return d.thumbnail})
 	.style("position","absolute")
         .style("opacity","")
 	.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
