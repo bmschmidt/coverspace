@@ -81,6 +81,7 @@ update = function() {
 
     selection
 	.enter()
+        .append("a").attr("href",function(d) {return filename})
 	.append("img")
 	.attr("id",function(d) {return(d.filename)})
 	.attr("src",function(d) {return d.filename})
@@ -89,9 +90,10 @@ update = function() {
 	.style("position","absolute")
         .attr("transform","scale(.15)")
         .style("opacity",.66)
-        .append("a").attr("href",function(d) {return "130thumbs/" + d.date + ".jpg"})
 	.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
 	.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
+
+
 
 .attr("title",function(d) {return("filename: " + d.filename)})
     selection
