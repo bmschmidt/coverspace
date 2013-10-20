@@ -3,14 +3,13 @@
 from wand.image import *
 from wand.color import *
 from colorsys import *
-import colorsys
 import os
 import json
 import sys
 
 summaries = open("summaries.json","w")
 
-#You have to store the 
+#You have to store the images all in one directory
 imageDirectory = "images"
 
 class myFile:
@@ -25,6 +24,7 @@ class myFile:
         try:
             img = self.img
         except:
+            sys.stderr.write("Warning: imageMagick couldn't load " + self.statistics.filename + "\n")
             return dict()
         img.resize(1,1)
         average = img[0,0]
