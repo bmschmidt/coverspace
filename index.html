@@ -39,7 +39,7 @@ var data;
 height = window.innerHeight
 width = window.innerWidth
 x = d3.scale.linear().domain([0,1]).range([0,window.innerWidth])
-y = d3.scale.linear().domain([0,1]).range([200,window.innerHeight])
+y = d3.scale.linear().domain([0,1]).range([200,window.innerHeight-200])
 
 
 updateOptions = function(keys) {
@@ -61,41 +61,54 @@ checkVariable = function(element) {
 
 d3.json("summaries.json",function(images) {
     data = images
-
     data = data.filter(function(d) {return d3.keys(d).length>0}) //Some blank objects are creeping in: this isn't the best place to fix it. 
     console.log(data.length)
     updateOptions(d3.keys(data[0]))
     update()
 })
 
+var tmp,extent
+updateScale = function(myScale,myValues) {
+    myRange = d3.extent(myScale.range())
+    tmp = myValues
+    extent = d3.extent(tmp)
+    if (isNaN(parseInt(extent[0]))) {
+	console.log("not parsed")
+	sorted = tmp.sort()
+	myScale = d3.scale.ordinal().domain(sorted).rangePoints(myRange)
+    } else {
+	myScale = d3.scale.linear().domain(extent).range(myRange)
+    }			
+    return myScale
+}
+
 update = function() {
     selection = d3
 	.select("#displaySpace")
-	.selectAll("img").data(data,function(d) {return d.filename})
+	.selectAll(".image.container")
+	.data(data,function(d) {return d.filename})
 
     yVariable = checkVariable("#y")
     xVariable = checkVariable("#x")
-
-    y.domain(d3.extent(data.map(function(d) {return d[yVariable]})))
-    x.domain(d3.extent(data.map(function(d) {return d[xVariable]})))
+    y = updateScale(y,data.map(function(d) {return d[yVariable]}))
+    x = updateScale(x,data.map(function(d) {return d[xVariable]}))
 
     selection
 	.enter()
-        .append("a").attr("href",function(d) {return filename})
+        .append("a")
+	.attr("href",function(d) {return d.filename})
+	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
+	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
+	.attr("class","image container")
 	.append("img")
 	.attr("id",function(d) {return(d.filename)})
 	.attr("src",function(d) {return d.filename})
-	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
-	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
 	.style("position","absolute")
-        .attr("transform","scale(.15)")
         .style("opacity",.66)
 	.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
 	.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
+	.attr("title",function(d) {return("filename: " + d.filename)})
 
-
-
-.attr("title",function(d) {return("filename: " + d.filename)})
     selection
 	.transition()
 	.duration(3000)
