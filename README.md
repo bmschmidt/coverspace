@@ -33,5 +33,4 @@ TODO
 1. Allow user-generated metadata to be keyed against the filenames (so we can sort by year, for instance.)
 1. Incorporate filtering based on metadata.
 2. Opacity Slider.
-3. Automatic thumbnail generation in the python script on large images.
 4. ???
