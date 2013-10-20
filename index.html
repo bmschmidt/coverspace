@@ -105,7 +105,7 @@ update = function() {
 	.attr("id",function(d) {return(d.filename)})
 	.attr("src",function(d) {return d.filename})
 	.style("position","absolute")
-        .style("opacity",.66)
+        .style("opacity","")
 	.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
 	.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
 	.attr("title",function(d) {return("filename: " + d.filename)})
