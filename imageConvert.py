@@ -10,7 +10,8 @@ import sys
 
 summaries = open("summaries.json","w")
 
-imageDirectory = "130thumbs"
+#You have to store the 
+imageDirectory = "images"
 
 class myFile:
     def __init__(self,filename="1987-01-01.jpg"):
@@ -44,8 +45,14 @@ class myFile:
     
 def writeOutJSON(): 
     stats = []
+    
+    try:
+        files = os.listdir(imageDirectory)
+    except:
+        print "Have you created a folder called images and filled it with JPGs?"
+        raise
 
-    for filename in os.listdir(imageDirectory):
+    for filename in files:
         sys.stdout.write( filename + "\r")
         averages = myFile(filename).averages()
         stats.append(averages)
