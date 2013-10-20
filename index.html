@@ -44,8 +44,7 @@ y = d3.scale.linear().domain([0,1]).range([200,window.innerHeight-200])
 
 updateOptions = function(keys) {
     //options are dynamically updated according to the keys you put in.
-    var options = keys || ['hue','sat','lum','time','decade','yearInDecade']
-    var options = keys
+    var options = keys.sort()
     console.log(options)
     optionMenus = d3.selectAll(".axisSelector").selectAll("option").data(options)
     optionMenus.enter().append("option").attr("value",function(d) {return(d)}).text(function(d) {return (d)})

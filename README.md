@@ -16,3 +16,16 @@ Creating an instance
 Dependencies:
 Python wand library
 ImageMagick
+
+Notes
+======
+Currently, you CAN sort on the filename: so if you make your filenames into something useful (eg datestamps) you can arrange by date.
+
+TODO
+====
+
+1. Allow user-generated metadata to be keyed against the filenames (so we can sort by year, for instance.)
+1. Incorporate filtering based on metadata.
+2. Opacity Slider.
+3. Automatic thumbnail generation in the python script on large images.
+4. ???
