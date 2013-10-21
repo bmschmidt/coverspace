@@ -33,4 +33,7 @@ TODO
 1. Allow user-generated metadata to be keyed against the filenames (so we can sort by year, for instance.)
 1. Incorporate filtering based on metadata.
 2. Opacity Slider.
+3. grid re-arrangement when both x and y are a single variable. (This will be really cool, actually)
+4. Add entropy to the color distribution elements.
+5. Think about how subdivisions of the images might be useful for something or other.
 4. ???
