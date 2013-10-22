@@ -79,6 +79,16 @@ checkVariable = function(element) {
 d3.json("summaries.json",function(images) {
     data = images
     data = data.filter(function(d) {return d3.keys(d).length>0})
+    data = data.map(function(d) {
+	dated = Date.parse(d.id.split(".")[0])
+	if(isNaN(dated)) {return d}
+	dated = new Date(dated)
+	d.year = new Date(dated).getFullYear()
+	d.decade = 10*Math.floor(d.year/10)
+	d.remainder = d.year%10
+	d.month = dated.getMonth()
+	return d;
+    })
     //Some blank objects are creeping in: this isn't the best place to fix it, but hey. 
     updateOptions(d3.keys(data[0]))
     update()
@@ -98,7 +108,7 @@ update = function() {
 
     if (yVariable===xVariable & true) {
 	data = d3.layout.grid()
-	    .points()
+	    .bands()
 	    .size([width,height])(data);
     } else {
 	data=data.map(function(d) {
