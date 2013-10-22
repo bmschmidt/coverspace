@@ -2,10 +2,11 @@
 
 from wand.image import *
 from wand.color import *
-from colorsys import *
+import colorsys
 import os
 import json
 import sys
+
 
 summaries = open("summaries.json","w")
 
@@ -14,17 +15,36 @@ imageDirectory = "images"
 
 class myFile:
     def __init__(self,filename="1987-01-01.jpg"):
-        self.statistics = {"filename":imageDirectory +"/" + filename}
+        self.statistics = {"filename":imageDirectory +"/" + filename,"id":filename,"thumbnail":"thumbnails/" + filename}
         try:
             self.img = Image(filename=self.statistics['filename'])
+        except:
+            sys.stderr.write("Warning: imageMagick couldn't load " + self.statistics["filename"]+ "\n")
+            pass
+
+
+    def writeThumbnails(self):
+        try:
+            with self.img.clone() as i:
+                #Resize so the largest dimension is 100px wide.
+                if i.height > i.width and i.height > 100:
+                    i.transform(resize='x100')
+                elif i.width > 100:
+                    i.transform(resize='100x')
+                else:
+                    pass
+
+                self.thumbnail = i.clone()
+                i.save(filename=self.statistics["thumbnail"])
         except:
             pass
             
     def averages(self):
+        self.writeThumbnails()
         try:
-            img = self.img
+            img = self.thumbnail
+            #It's faster to do the reconversion from the thumbnail than the original.
         except:
-            sys.stderr.write("Warning: imageMagick couldn't load " + self.statistics.filename + "\n")
             return dict()
         img.resize(1,1)
         average = img[0,0]
@@ -43,6 +63,16 @@ class myFile:
         return self.statistics
     
     
+def image_entropy(im):
+    """
+    From http://stackoverflow.com/questions/1516736/django-sorl-thumbnail-crop-picture-head
+    From Reddit: Calculate the entropy of an image"""
+    hist = im.histogram()
+    hist_size = sum(hist)
+    hist = [float(h) / hist_size for h in hist]
+    return -sum([p * math.log(p, 2) for p in hist if p != 0])
+
+
 def writeOutJSON(): 
     stats = []
     
@@ -59,4 +89,5 @@ def writeOutJSON():
 
     summaries.write(json.dumps(stats))
 
-writeOutJSON()
+if __name__=="__main__":
+    writeOutJSON()
