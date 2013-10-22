@@ -19,7 +19,7 @@ img {opacity:.66}
 
 
 <body>
-<h1>Coverspace</h1>
+<h1>Coverspace: an in-browser tool for dynamically visualizing images</h1>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -107,9 +107,17 @@ update = function() {
     
 
     if (yVariable===xVariable & true) {
-	data = d3.layout.grid()
+	sculpted = d3.nest().key(function(d) {return(d[xVariable])}).entries(data)
+
+        sculpted.sort(function(a,b) {return a.key > b.key})
+
+        console.log("arraying on a grid of size " + sculpted.length)
+	sculpted = d3.layout.grid()
 	    .bands()
-	    .size([width,height])(data);
+	    .size([width,height])(sculpted);
+							      sculpted.map(function(d) {d.values.map(function(e) {e.x=d.x; e.y=d.y})})
+							      console.log(sculpted[0])
+	data = sculpted.map(function(d) {return d.values}).reduce(function(a,b) {return a.concat(b)})
     } else {
 	data=data.map(function(d) {
 	    d.x = x(d[xVariable])	
@@ -134,7 +142,7 @@ update = function() {
 	.on("mouseover",function(d) {d3.select(this).style("opacity",1)})
 	.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
 	.attr("title",function(d) {return("filename: " + d.filename)})
-
+							      selection.exit().transition().style("opacity",0).remove()
     selection
 	.transition()
 	.duration(3000)
