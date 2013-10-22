@@ -5,3 +5,7 @@
 *.Rproj
 *.Rdata
 *.RData
+TimeCovers.txt
+imageConvert.pyc
+timeScraper.pyc
+*.pyc
