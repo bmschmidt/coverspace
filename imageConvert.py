@@ -7,6 +7,7 @@ import os
 import json
 import sys
 
+
 summaries = open("summaries.json","w")
 
 #You have to store the images all in one directory
@@ -42,6 +43,7 @@ class myFile:
         self.writeThumbnails()
         try:
             img = self.thumbnail
+            #It's faster to do the reconversion from the thumbnail than the original.
         except:
             return dict()
         img.resize(1,1)
@@ -61,6 +63,16 @@ class myFile:
         return self.statistics
     
     
+def image_entropy(im):
+    """
+    From http://stackoverflow.com/questions/1516736/django-sorl-thumbnail-crop-picture-head
+    From Reddit: Calculate the entropy of an image"""
+    hist = im.histogram()
+    hist_size = sum(hist)
+    hist = [float(h) / hist_size for h in hist]
+    return -sum([p * math.log(p, 2) for p in hist if p != 0])
+
+
 def writeOutJSON(): 
     stats = []
     
@@ -77,4 +89,5 @@ def writeOutJSON():
 
     summaries.write(json.dumps(stats))
 
-writeOutJSON()
+if __name__=="__main__":
+    writeOutJSON()
