@@ -31,6 +31,7 @@ TODO
 ====
 
 1. Allow user-generated metadata to be keyed against the filenames (so we can sort by year, for instance.)
+1. Zoom in on a particular region (probably by actually expanding the display area of the page, though there are other options.)
 1. Incorporate filtering based on metadata.
 2. Opacity Slider.
 4. ???
