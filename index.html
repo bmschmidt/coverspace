@@ -92,9 +92,28 @@ d3.json("summaries.json",function(images) {
 	d.month = dated.getMonth()
 	return d;
     })
-    //Some blank objects are creeping in: this isn't the best place to fix it, but hey. 
+d3.json("metadata.json", function(error,metadatafile) {
+//This now can read in associated metadata and add it in.
+if (error) {
     updateOptions(d3.keys(data[0]))
     update()
+}
+    metadata = metadatafile
+    //Some blank objects are creeping in: this isn't the best place to fix it, but hey. 
+    keyed = d3.nest().key(function(d) {return d.filename}).map(metadata)
+    data.map(function(d) {
+if (keyed[d.id] !== undefined) {
+    additional = keyed[d.id][0]
+     d3.keys(additional).map(function(key) {
+   d[key] = additional[key]
+
+})
+}
+})
+
+    updateOptions(d3.keys(data[0]))
+    update()
+})
 })
 
 update = function() {
@@ -119,7 +138,7 @@ update = function() {
 	    .bands()
 	    .size([width,height])(sculpted);
 							      sculpted.map(function(d) {d.values.map(function(e) {e.x=d.x; e.y=d.y})})
-							      console.log(sculpted[0])
+							      
 	data = sculpted.map(function(d) {return d.values}).reduce(function(a,b) {return a.concat(b)})
     } else {
 	data=data.map(function(d) {
@@ -132,7 +151,7 @@ update = function() {
     selection
 	.enter()
         .append("a")
-	.attr("href",function(d) {return d.filename})
+	.attr("href",function(d) {if (d.url!= undefined) {return d.url} return "images/" + d.id})
         .attr("target","_blank")
 	.style("top",function(d) {val =  y(d[yVariable]); return((200 + d.y) + "px")})
 	.style("left",function (d) {return d.x+"px";return x(d[xVariable]) +"px"})
