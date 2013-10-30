@@ -5,3 +5,6 @@ summaries.json: thumbnails
 
 thumbnails:
 	mkdir -p thumbnails
+
+thumbnails.css:
+	glue-sprite thumbnails .
