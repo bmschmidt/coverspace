@@ -98,6 +98,7 @@ update = function() {
 	.enter()
         .append("a")
 	.attr("href",function(d) {return d.filename})
+        .attr("target","_blank")
 	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
 	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
 	.attr("class","image container")
