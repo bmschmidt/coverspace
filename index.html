@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <style>
 
-img {opacity:.66}
+.thumbnail {opacity:.5}
 
 </style>
 <script>
@@ -17,35 +17,56 @@ img {opacity:.66}
 
 </script>
 
+<link rel="stylesheet" href="thumbnails.css" type="text/css"/>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css"/>
 
 <body>
-<h1>Coverspace</h1>
+<h1>Coverspace: an in-browser tool for dynamically visualizing images</h1>
+
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="d3-grid/d3-grid.js"></script>
 
-<body>
+X axis: <select id="x" class="axisSelector"></select>
 
-X axis: <select id="x" class="axisSelector">
-</select>
 <br>
 Y axis: <select id="y" class="axisSelector"></select>
+<br>
+Image Opacity: <text id ="opacityNum">.66</text><div id="slider" data-wjs-element="box" style="width:500px"></div>
 
 <div id=displaySpace></div>
-
 <script>
 
 var data;
 height = window.innerHeight
 width = window.innerWidth
 x = d3.scale.linear().domain([0,1]).range([0,window.innerWidth])
-y = d3.scale.linear().domain([0,1]).range([200,window.innerHeight-200])
+y = d3.scale.linear().domain([0,1]).range([0,window.innerHeight-200])
+
+var overall,bounds;
+
+updateScale = function(myScale,myValues) {
+    //updates a scale to work with a new set of output values:
+    //dynamically changes depending on if it's a numeric range or a sortable set of strings (treated as a factor scale)
+    myRange = d3.extent(myScale.range())
+    tmp = myValues
+    extent = d3.extent(tmp.map(parseFloat))
+    if (isNaN(parseFloat(extent[0]))) {
+	sorted = tmp.sort()
+	myScale = d3.scale.ordinal().domain(sorted).rangePoints(myRange)
+    } else {
+	myScale = d3.scale.linear().domain(extent).range(myRange)
+    }			
+    return myScale
+}
 
 
 updateOptions = function(keys) {
     //options are dynamically updated according to the keys you put in.
     var options = keys.sort()
-    console.log(options)
     optionMenus = d3.selectAll(".axisSelector").selectAll("option").data(options)
     optionMenus.enter().append("option").attr("value",function(d) {return(d)}).text(function(d) {return (d)})
 }
@@ -60,28 +81,21 @@ checkVariable = function(element) {
 
 d3.json("summaries.json",function(images) {
     data = images
-    data = data.filter(function(d) {return d3.keys(d).length>0}) //Some blank objects are creeping in: this isn't the best place to fix it. 
-    console.log(data.length)
+    data = data.filter(function(d) {return d3.keys(d).length>0})
+    data = data.map(function(d) {
+	dated = Date.parse(d.id.split(".")[0])
+	if(isNaN(dated)) {return d}
+	dated = new Date(dated)
+	d.year = new Date(dated).getFullYear()
+	d.decade = 10*Math.floor(d.year/10)
+	d.remainder = d.year%10
+	d.month = dated.getMonth()
+	return d;
+    })
+    //Some blank objects are creeping in: this isn't the best place to fix it, but hey. 
     updateOptions(d3.keys(data[0]))
     update()
 })
-
-var tmp,extent
-updateScale = function(myScale,myValues) {
-    myRange = d3.extent(myScale.range())
-    tmp = myValues
-
-    extent = d3.extent(tmp.map(parseFloat))
-    console.log(extent)
-    if (isNaN(parseFloat(extent[0]))) {
-	console.log("not parsed")
-	sorted = tmp.sort()
-	myScale = d3.scale.ordinal().domain(sorted).rangePoints(myRange)
-    } else {
-	myScale = d3.scale.linear().domain(extent).range(myRange)
-    }			
-    return myScale
-}
 
 update = function() {
     selection = d3
@@ -93,32 +107,70 @@ update = function() {
     xVariable = checkVariable("#x")
     y = updateScale(y,data.map(function(d) {return d[yVariable]}))
     x = updateScale(x,data.map(function(d) {return d[xVariable]}))
+    
+
+    if (yVariable===xVariable & true) {
+	sculpted = d3.nest().key(function(d) {return(d[xVariable])}).entries(data)
+
+        sculpted.sort(function(a,b) {return a.key > b.key})
+
+        console.log("arraying on a grid of size " + sculpted.length)
+	sculpted = d3.layout.grid()
+	    .bands()
+	    .size([width,height])(sculpted);
+							      sculpted.map(function(d) {d.values.map(function(e) {e.x=d.x; e.y=d.y})})
+							      console.log(sculpted[0])
+	data = sculpted.map(function(d) {return d.values}).reduce(function(a,b) {return a.concat(b)})
+    } else {
+	data=data.map(function(d) {
+	    d.x = x(d[xVariable])	
+	    d.y = y(d[yVariable])		   
+	    return d
+	})
+    }
 
     selection
 	.enter()
         .append("a")
 	.attr("href",function(d) {return d.filename})
         .attr("target","_blank")
-	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
-	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
+	.style("top",function(d) {return((200 + d.y) + "px")})
+	.style("left",function (d) {return d.x+"px"})
 	.attr("class","image container")
-	.append("img")
-	.attr("id",function(d) {return(d.filename)})
-	.attr("src",function(d) {return d.filename})
+	.append("div")
+        .attr("class",function(d) {return "thumbnail sprite-thumbnails-" + d.id.split(".")[0]})
+        .attr("id",function(d) {return(d.filename)})
 	.style("position","absolute")
         .style("opacity","")
-	.on("mouseover",function(d) {console.log("hi"); d3.select(this).style("opacity",1)})
-	.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
+	.on("mouseover",function(d) {d3.select(this).style("opacity",1)})
+	.on("mouseout",function(d) {d3.select(this).style("opacity",$("#slider").slider("value"))})
 	.attr("title",function(d) {return("filename: " + d.filename)})
+        selection.exit().transition().style("opacity",0).remove()
 
     selection
 	.transition()
 	.duration(3000)
-	.style("top",function(d) {val =  y(d[checkVariable("#y")]); return(val + "px")})
-	.style("left",function (d) {return x(d[checkVariable("#x")]) +"px"})
+	.style("top",function(d) {return((200+d.y)+"px");val =  y(d[checkVariable("#y")]); return(val + "px")})
+	.style("left",function (d) {return(d.x + "px"); return x(d[checkVariable("#x")]) +"px"})
 	.style("position","absolute")
 
+
 }
+
 d3.selectAll(".axisSelector").on("change",update)
+
+
+        $('#slider').slider({ min: 0, max: 1, step: 0.01, value: .66 })
+            .bind("slidechange", function() {
+                //get the value of the slider with this call
+                var o = $(this).slider('value');
+
+                //here I am just specifying the element to change with a "made up" attribute (but don't worry, this is in the HTML specs and supported by all browsers).
+                d3.selectAll(".thumbnail").style("opacity",o)
+d3.select("#opacityNum").text(o)
+            });
+
+
 </script>
+
 </body>
