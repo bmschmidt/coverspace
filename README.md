@@ -1,6 +1,17 @@
-D3 and imagemagick-based dynamic image display
+Coverspace
+==========
 
-Coverspace came out of the THATCamp New England Session. 
+D3 and imagemagick-based dynamic image display.
+
+
+Coverspace came out of conversations between Peter Leonard, Lauren Tilton, and Ben Schmidt surrounding the THATCamp New
+England session on "Image analytics"/"Screwing around with non-text."
+
+
+Example browsers (feel free to add one)
+=======================================
+
+[OWI photographs](http://benschmidt.org/coverspace)
 
 
 
@@ -31,9 +42,9 @@ TODO
 ====
 
 1. Allow user-generated metadata to be keyed against the filenames (so we can sort by year, for instance.)
+1. Zoom in on a particular region (probably by actually expanding the display area of the page, though there are other options.)
 1. Incorporate filtering based on metadata.
 2. Opacity Slider.
-3. grid re-arrangement when both x and y are a single variable. (This will be really cool, actually)
 4. Add entropy to the color distribution elements.
 5. Think about how subdivisions of the images might be useful for something or other.
 4. ???
