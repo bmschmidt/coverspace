@@ -16,21 +16,25 @@ img {opacity:.66}
   ga('send', 'pageview');
 
 </script>
-
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/themes/base/jquery-ui.css" type="text/css"/>
 
 <body>
 <h1>Coverspace: an in-browser tool for dynamically visualizing images</h1>
+
+
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="d3-grid/d3-grid.js"></script>
 
-<body>
+X axis: <select id="x" class="axisSelector"></select>
 
-X axis: <select id="x" class="axisSelector">
-</select>
 <br>
 Y axis: <select id="y" class="axisSelector"></select>
+<br>
+Image Opacity: <text id ="opacityNum">.66</text><div id="slider" data-wjs-element="box" style="width:500px"></div>
 
 <div id=displaySpace></div>
 
@@ -41,7 +45,6 @@ height = window.innerHeight
 width = window.innerWidth
 x = d3.scale.linear().domain([0,1]).range([0,window.innerWidth])
 y = d3.scale.linear().domain([0,1]).range([0,window.innerHeight-200])
-
 
 var overall,bounds;
 
@@ -137,10 +140,11 @@ update = function() {
 	.append("img")
 	.attr("id",function(d) {return(d.filename)})
 	.attr("src",function(d) {return d.thumbnail})
+.attr("class","thumbnail")
 	.style("position","absolute")
         .style("opacity","")
 	.on("mouseover",function(d) {d3.select(this).style("opacity",1)})
-	.on("mouseout",function(d) {d3.select(this).style("opacity",.75)})
+	.on("mouseout",function(d) {d3.select(this).style("opacity",$("#slider").slider("value"))})
 	.attr("title",function(d) {return("filename: " + d.filename)})
 							      selection.exit().transition().style("opacity",0).remove()
     selection
@@ -151,6 +155,21 @@ update = function() {
 	.style("position","absolute")
 
 }
+
 d3.selectAll(".axisSelector").on("change",update)
+
+
+        $('#slider').slider({ min: 0, max: 1, step: 0.01, value: .66 })
+            .bind("slidechange", function() {
+                //get the value of the slider with this call
+                var o = $(this).slider('value');
+
+                //here I am just specifying the element to change with a "made up" attribute (but don't worry, this is in the HTML specs and supported by all browsers).
+                d3.selectAll(".thumbnail").style("opacity",o)
+d3.select("#opacityNum").text(o)
+            });
+
+
 </script>
+
 </body>
