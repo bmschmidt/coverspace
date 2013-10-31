@@ -1,4 +1,4 @@
-all: summaries.json thumbnails
+all: summaries.json thumbnails.png
 
 summaries.json: thumbnails
 	python imageConvert.py
@@ -6,7 +6,7 @@ summaries.json: thumbnails
 thumbnails:
 	mkdir -p thumbnails
 
-thumbnails.css:
+thumbnails.css: thumbnails
 	glue-sprite thumbnails .
 
 thumbnails.png: thumbnails.css
