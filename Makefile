@@ -13,3 +13,6 @@ thumbnails.png: thumbnails.css
 	#An initial version will be created by thumbnails.css
 	pngquant 256 thumbnails.png
 	mv thumbnails-fs8.png thumbnails.png
+
+clean:
+	rm summaries.json thumbnails.png thumbnails.css thumbnails/*
