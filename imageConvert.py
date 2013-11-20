@@ -74,15 +74,18 @@ def image_entropy(im):
 
 
 def writeOutJSON(): 
+    #An array which d3 will use to store image statistics
     stats = []
     
     try:
         files = os.listdir(imageDirectory)
+
     except:
         print "Have you created a folder called images and filled it with JPGs?"
         raise
 
     for filename in files:
+        #Update the screen w/ a ticker.
         sys.stdout.write( filename + "\r")
         averages = myFile(filename).averages()
         stats.append(averages)

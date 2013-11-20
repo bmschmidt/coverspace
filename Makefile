@@ -1,4 +1,4 @@
-all: summaries.json thumbnails
+all: summaries.json thumbnails thumbnails.png
 
 summaries.json: thumbnails
 	python imageConvert.py
@@ -13,3 +13,6 @@ thumbnails.png: thumbnails.css
 	#An initial version will be created by thumbnails.css
 	pngquant 256 thumbnails.png
 	mv thumbnails-fs8.png thumbnails.png
+
+clean:
+	rm -r thumbnails* summaries.json 
