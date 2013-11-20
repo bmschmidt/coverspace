@@ -6,7 +6,7 @@ summaries.json: thumbnails
 thumbnails:
 	mkdir -p thumbnails
 
-thumbnails.css:
+thumbnails.css: thumbnails
 	glue-sprite thumbnails .
 
 thumbnails.png: thumbnails.css
@@ -15,4 +15,5 @@ thumbnails.png: thumbnails.css
 	mv thumbnails-fs8.png thumbnails.png
 
 clean:
-	rm -r thumbnails* summaries.json 
+	rm summaries.json thumbnails.png thumbnails.css thumbnails/*
+

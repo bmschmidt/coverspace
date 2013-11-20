@@ -24,7 +24,7 @@ ga('send', 'pageview');
 
     <body>
     <h1>Coverspace: an in-browser tool for dynamically visualizing images</h1>
-
+    <text>Toggle the options below to explore this image collection. See <a href=http://benschmidt.org/coverspace>Ben's Schmidt's explanation</a> for more.</text><br>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -97,7 +97,7 @@ d3.json("summaries.json",function(images) {
         if (error) {
             updateOptions(d3.keys(data[0]))
             update()
-	    return
+            return
         }
         metadata = metadatafile
         //Some blank objects are creeping in: this isn't the best place to fix it, but hey.
