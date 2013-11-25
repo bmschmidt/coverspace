@@ -23,7 +23,7 @@ class myFile:
             pass
 
 
-    def writeThumbnails(self,size=120):
+    def writeThumbnails(self,size=160):
         try:
             with self.img.clone() as i:
                 #Resize so the largest dimension is 120px wide.
