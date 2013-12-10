@@ -44,7 +44,7 @@ var data;
 height = window.innerHeight
 width = window.innerWidth
 x = d3.scale.linear().domain([0,1]).range([0,window.innerWidth])
-y = d3.scale.linear().domain([0,1]).range([0,window.innerHeight-200])
+y = d3.scale.linear().domain([0,1]).range([window.innerHeight-350,0])
 
 var overall,bounds;
 
@@ -131,13 +131,11 @@ update = function() {
 
     if (yVariable===xVariable & true) {
         sculpted = d3.nest().key(function(d) {return(d[xVariable])}).entries(data)
-
         sculpted.sort(function(a,b) {return a.key > b.key})
-
         console.log("arraying on a grid of size " + sculpted.length)
         sculpted = d3.layout.grid()
             .bands()
-            .size([width,height])(sculpted);
+            .size([width,height-300])(sculpted);
         sculpted.map(function(d) {d.values.map(function(e) {e.x=d.x; e.y=d.y})})
 
         data = sculpted.map(function(d) {return d.values}).reduce(function(a,b) {return a.concat(b)})
