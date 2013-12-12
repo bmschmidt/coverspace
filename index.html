@@ -92,6 +92,7 @@ d3.json("summaries.json",function(images) {
         d.month = dated.getMonth()
         return d;
     })
+
     d3.json("metadata.json", function(error,metadatafile) {
         //This now can read in associated metadata and add it in.
         if (error) {
@@ -154,11 +155,18 @@ update = function() {
         .attr("target","_blank")
         .style("top",function(d) {return((200 + d.y) + "px")})
         .style("left",function (d) {return d.x+"px"})
+	.append("img")
+        .attr("id",function(d) {return(d.filename)})
+        .attr("src",function(d) {return d.thumbnail})
+.attr("class","thumbnail")
+        .style("position","absolute")
+
+/**        .append("div") //the sprites just aren't working, so commenting out for now.
         .attr("class","image container")
-        .append("div")
         .attr("class",function(d) {return "thumbnail sprite-thumbnails-" + d.id.split(".")[0]})
         .attr("id",function(d) {return(d.filename)})
         .style("position","absolute")
+*/
         .style("opacity","")
         .on("mouseover",function(d) {d3.select(this).style("opacity",1)})
         .on("mouseout",function(d) {d3.select(this).style("opacity",$("#slider").slider("value"))})
