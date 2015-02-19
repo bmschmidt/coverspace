@@ -122,7 +122,7 @@ update = function() {
     selection = d3
         .select("#displaySpace")
         .selectAll(".image.container")
-        .data(data,function(d) {return d.filename})
+        .data(data,function(d) {console.log(d.filename); return d.filename})
 
     yVariable = checkVariable("#y")
     xVariable = checkVariable("#x")
@@ -155,15 +155,16 @@ update = function() {
         .attr("target","_blank")
         .style("top",function(d) {return((200 + d.y) + "px")})
         .style("left",function (d) {return d.x+"px"})
+        .attr("class","image container")
 	.append("img")
         .attr("id",function(d) {return(d.filename)})
         .attr("src",function(d) {return d.thumbnail})
-.attr("class","thumbnail")
+        .attr("class","thumbnail")
         .style("position","absolute")
 
 /**        .append("div") //the sprites just aren't working, so commenting out for now.
-        .attr("class","image container")
-        .attr("class",function(d) {return "thumbnail sprite-thumbnails-" + d.id.split(".")[0]})
+
+//        .attr("class",function(d) {return "thumbnail sprite-thumbnails-" + d.id.split(".")[0]})
         .attr("id",function(d) {return(d.filename)})
         .style("position","absolute")
 */
